@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MSDKDecodeInterop.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="base_allocator.cpp" />
+    <ClCompile Include="d3d11_allocator.cpp" />
+    <ClCompile Include="d3d11_device.cpp" />
+    <ClCompile Include="DecodingPipeline.cpp" />
+    <ClCompile Include="PluginsManager.cpp" />
+    <ClCompile Include="SimpleBitstreamReader.cpp" />
+    <ClCompile Include="SurfacesPool.cpp" />
+    <ClCompile Include="Thread11.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MSDKDecodeInterop.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="base_allocator.h" />
+    <ClInclude Include="d3d11_allocator.h" />
+    <ClInclude Include="d3d11_device.h" />
+    <ClInclude Include="DecodingPipeline.h" />
+    <ClInclude Include="hw_device.h" />
+    <ClInclude Include="mfx_itt_trace.h" />
+    <ClInclude Include="MfxFrameSurfaceExt.h" />
+    <ClInclude Include="MSDKHandle.h" />
+    <ClInclude Include="MSDKTime.h" />
+    <ClInclude Include="PluginsManager.h" />
+    <ClInclude Include="sample_defs.h" />
+    <ClInclude Include="sample_types.h" />
+    <ClInclude Include="SimpleBitstreamReader.h" />
+    <ClInclude Include="SurfacesPool.h" />
+    <ClInclude Include="Thread11.h" />
+  </ItemGroup>
+</Project>

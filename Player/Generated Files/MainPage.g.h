@@ -7,6 +7,18 @@
 //------------------------------------------------------------------------------
 
 
+namespace Windows {
+    namespace UI {
+        namespace Xaml {
+            namespace Controls {
+                ref class SplitView;
+                ref class FontIcon;
+                ref class TextBlock;
+                ref class MediaElement;
+            }
+        }
+    }
+}
 
 namespace Player
 {
@@ -28,6 +40,10 @@ namespace Player
         bool _contentLoaded;
     
     
+        private: ::Windows::UI::Xaml::Controls::SplitView^ Splitter;
+        private: ::Windows::UI::Xaml::Controls::FontIcon^ Hamburger;
+        private: ::Windows::UI::Xaml::Controls::TextBlock^ Header;
+        private: ::Windows::UI::Xaml::Controls::MediaElement^ mediaElement;
     };
 }
 

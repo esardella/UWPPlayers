@@ -6,6 +6,10 @@
 #pragma once
 
 #include "MainPage.g.h"
+#include <experimental\resumable>
+
+#include <pplawait.h>
+using namespace concurrency;
 
 namespace Player
 {
@@ -17,5 +21,13 @@ namespace Player
 	public:
 		MainPage();
 
+		void MediaFailed(Platform::Object ^ sender, Windows::UI::Xaml::ExceptionRoutedEventArgs ^ e);
+		void DisplayErrorMessage(Platform::String ^ message);
+
+	private:
+		void  OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
+		task<void> LoadSource();
+
+		MSDKDecodeInterop::MSDKInterop^ msdkMSS;
 	};
 }

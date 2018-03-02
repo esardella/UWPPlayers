@@ -8,14 +8,14 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <SplitView x:Name="Splitter">
+        <SplitView x:ConnectionId='1' x:Name="Splitter">
 
             <!-- Control panel -->
             <SplitView.Pane>
                 <StackPanel VerticalAlignment="Stretch" Margin="10, 50, 0, 0">
-                    <TextBlock x:Name="Header" Text="Open Local File or URI"/>
+                    <TextBlock x:ConnectionId='3' x:Name="Header" Text="Open Local File or URI"/>
                     <StackPanel Orientation="Horizontal">
-                        <AppBarButton Content="Open Local File" Icon="OpenFile" Margin="0, 10, 10, 0" Click="OpenLocalFile"/>
+                        <AppBarButton x:ConnectionId='4' Content="Open Local File" Icon="OpenFile" Margin="0, 10, 10, 0"                      />
                         
                     </StackPanel>
        
@@ -23,11 +23,11 @@
             </SplitView.Pane>
 
             <!-- Main content -->
-            <MediaElement x:Name="mediaElement"
+            <MediaElement x:ConnectionId='5' x:Name="mediaElement"
                         AreTransportControlsEnabled="True"
                         AudioCategory="ForegroundOnlyMedia"
                         AutoPlay="True"
-                        MediaFailed="MediaFailed"
+                                                 
             />
 
         </SplitView>
@@ -35,8 +35,9 @@
         <!-- Control panel toggle button -->
         <ToggleButton VerticalAlignment="Top" Margin="10, 10, 0, 0" IsChecked="{Binding ElementName=Splitter, Path=IsPaneOpen, Mode=TwoWay}">
             <ToggleButton.Content>
-                <FontIcon x:Name="Hamburger" FontFamily="Segoe MDL2 Assets" Foreground="White" Glyph="&#xE700;"/>
+                <FontIcon x:ConnectionId='2' x:Name="Hamburger" FontFamily="Segoe MDL2 Assets" Foreground="White" Glyph="&#xE700;"/>
             </ToggleButton.Content>
         </ToggleButton>
     </Grid>
 </Page>
+
