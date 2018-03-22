@@ -114,6 +114,7 @@ private:
 
 #if (defined(_WIN32) || defined(_WIN64))
 
+//#include <d3d11.h>
 #include <d3d11.h>
 #include <vector>
 #include <map>
@@ -160,6 +161,7 @@ protected:
 
     D3D11AllocatorParams m_initParams;
     ID3D11DeviceContext *m_pDeviceContext;
+	//ID3D11DeviceContext4 *m_pDeviceContext;
 
     struct TextureResource
     {

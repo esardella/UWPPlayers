@@ -172,6 +172,8 @@ mfxStatus D3D11FrameAllocator::LockFrame(mfxMemId mid, mfxFrameData *ptr)
                     if (S_OK != hRes && DXGI_ERROR_WAS_STILL_DRAWING != hRes)
                     {
                         msdk_printf(MSDK_STRING("ERROR: m_pDeviceContext->Map = 0x%08lx\n"), hRes);
+						
+					
                     }
                 }
                 while (DXGI_ERROR_WAS_STILL_DRAWING == hRes);
@@ -181,7 +183,8 @@ mfxStatus D3D11FrameAllocator::LockFrame(mfxMemId mid, mfxFrameData *ptr)
     }
 
     if (FAILED(hRes))
-        return MFX_ERR_LOCK_MEMORY;
+
+		return MFX_ERR_LOCK_MEMORY;
 
     switch (desc.Format)
     {

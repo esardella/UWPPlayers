@@ -24,7 +24,8 @@ or https://software.intel.com/en-us/media-client-solutions-support.
 #include <atomic>
 #include <list>
 #include "d3d11_device.h"
-#include "d3d11_allocator.h"
+//#include "d3d11_allocator.h"
+#include "sysmem_allocator.h"
 #include "SurfacesPool.h"
 #include "Thread11.h"
 
@@ -36,7 +37,9 @@ using namespace Windows::Media::Core;
 
 namespace MSDKDecodeInterop
 {
-	class CDecodingPipeline //: public CThread11
+	
+
+	class CDecodingPipeline  //: public CThread11
 	{
 	public:
 
@@ -53,17 +56,24 @@ namespace MSDKDecodeInterop
 		CDecodingPipeline();
 
 		bool Init();
-		bool OnStart();
-		
+	
+		bool m_DecodeInited; 
+		bool OnStart(); 
+		void LaunchDecoderInit();
+		bool InitDecoder();
+		CMfxFrameSurfaceExt* GetNextFrame();
+
 		VideoStreamDescriptor^ videoStreamDiscriptor;
 		VideoStreamDescriptor^ GetVideoStreamDiscriptor(); 
 
 		void Play();
 		void Stop();
 		void Pause();
+
 		void Load(Windows::Storage::StorageFile^ file);
 		void SetCodecID(mfxU32 codec) { codecID = codec; }
 		void SetFileSource(Windows::Storage::StorageFile^ fs) { fileSource = fs; }
+		
 		PIPELINE_STATUS GetStatus() { return pipelineStatus; }
 		bool IsHWLib;
 		mfxU32 AsyncDepth;
@@ -74,7 +84,7 @@ namespace MSDKDecodeInterop
 		}
 		//  void SetRendererPanel(SampleDecodeUWP::CRendererPanel^ panel) { rendererPanel = panel; }
 		int GetProgressPromilleage() { return  reader.GetFileSize() ? (int)(reader.GetBytesProcessed() * 1000 / reader.GetFileSize()) : 0; }
-
+		std::list<CMfxFrameSurfaceExt*> outputSurfaces;
 	protected:
 	  //virtual bool OnStart() override;
 		//bool OnStart(); 
@@ -87,6 +97,8 @@ namespace MSDKDecodeInterop
 		 
 		mfxStatus InitSession();
 		mfxStatus SyncOneSurface();
+		void EnqueueSurface(CMfxFrameSurfaceExt* surface);
+	
 
 		bool LoadVideoStreamDiscriptor();
 		
@@ -102,9 +114,12 @@ namespace MSDKDecodeInterop
 		mfxU32 codecID;
 
 		CD3D11Device dev;
-		D3D11FrameAllocator allocator;
+		//D3D11FrameAllocator allocator;
+		SysMemFrameAllocator allocator; 
 		CSurfacesPool surfacesPool;
 		std::list<CMfxFrameSurfaceExt*> decodingSurfaces;
+
+		
 
 		//SampleDecodeUWP::CRendererPanel^ rendererPanel = nullptr;
 

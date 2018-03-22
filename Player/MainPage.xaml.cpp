@@ -33,15 +33,22 @@ MainPage::MainPage()
 	InitializeComponent();
 }
 
+void Player::MainPage::Page_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
+{
 
+	TimeSpan ts;
+	ts.Duration = 500;
+	timer->Interval = ts;
+	timer->Tick += ref new Windows::Foundation::EventHandler<Platform::Object ^>(this, &Player::MainPage::OnTick);
+	timer->Start();
 
+}
 void Player::MainPage::OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e)
 {
-	//LoadSource(); 
+ 
 
 
-
-
+ 
 
 	Windows::Storage::Pickers::FileOpenPicker^ picker = ref new Windows::Storage::Pickers::FileOpenPicker();
 	picker->ViewMode = Windows::Storage::Pickers::PickerViewMode::Thumbnail;
@@ -62,36 +69,7 @@ void Player::MainPage::OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml
 	{
 		if (file)
 		{
-			
-		/*
-			
-			create_task(file->OpenAsync(FileAccessMode::Read)).then([this, file](task<IRandomAccessStream^> stream)
-			{
-
-				IRandomAccessStream^ readStream = stream.get();
-				auto dataReader = ref new Windows::Storage::Streams::DataReader(readStream);
-				auto fileSize = readStream->Size;
-				auto task = create_task(dataReader->LoadAsync(10000));
-				task.wait();
-				auto nBytesRead = task.get();
-			});
-			*/
-			
-			/*
-			auto task = create_task(file->OpenReadAsync());
-			try {
-				task.wait();
-
-				Windows::Storage::Streams::IRandomAccessStreamWithContentType^ stream = task.get();
-				auto fileSize = stream->Size;
-				}
-			catch (Platform::COMException^ e)
-			{
-				//Example output: The system cannot find the specified file.
-				OutputDebugString(e->Message->Data());
-			}
-			*/
-			
+						
 			mediaElement->Stop();
 			
 				try {
@@ -133,21 +111,8 @@ void Player::MainPage::OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml
 
 }
 
-task<void> Player::MainPage::LoadSource()
+void Player::MainPage::OnTick(Platform::Object ^sender, Platform::Object ^args)
 {
- 
-	auto picker = ref new FileOpenPicker(); 
-	picker->FileTypeFilter->Append(L".h264");
-	picker->SuggestedStartLocation = PickerLocationId::ComputerFolder;
-
-	auto file = co_await picker->PickSingleFileAsync();
-	if (nullptr == file)
-		return; 
-
-	auto stream = co_await file->OpenReadAsync();
-	auto dataReader = ref new Windows::Storage::Streams::DataReader(stream);
-	auto filesize = stream->Size;
-	auto nBytesRead = co_await dataReader->LoadAsync(stream->Size);
 
 
 }

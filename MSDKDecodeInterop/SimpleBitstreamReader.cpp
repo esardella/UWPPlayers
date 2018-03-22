@@ -76,6 +76,7 @@ void CSimpleBitstreamReader::Reset()
     
 }
 
+/*
 task<void>CSimpleBitstreamReader::LoadSource(Windows::Storage::StorageFile^ fileSource)
 {
 
@@ -91,6 +92,7 @@ task<void>CSimpleBitstreamReader::LoadSource(Windows::Storage::StorageFile^ file
 
 
 }
+*/
 
 mfxStatus CSimpleBitstreamReader::Init(Windows::Storage::StorageFile^ fileSource)
 {
@@ -100,44 +102,17 @@ mfxStatus CSimpleBitstreamReader::Init(Windows::Storage::StorageFile^ fileSource
     }
 
     Close();
-	//concurrency::task<void> task = LoadSource(fileSource);
-	
- 
- 
 
-    //Getting File Size
-   // auto task = concurrency::create_task(temp->GetBasicPropertiesAsync());
-   // task.wait();
-   // fileSize = task.get()->Size;
-    //fileSize = ExecSync(file->GetBasicPropertiesAsync())->Size;
+	auto task = concurrency::create_task(fileSource->OpenReadAsync());
+	task.wait();
 
-    //open file to read input stream
-	//auto task = create_task(fileSource->OpenReadAsync());
-
-	auto task = create_task(fileSource->OpenReadAsync()); 
-	task.then([this,task](IRandomAccessStreamWithContentType^ stream)
-	{
-		task.wait();
-		 stream = task.get();
-		 dataReader = ref new Windows::Storage::Streams::DataReader(stream);
-		
-	}, Concurrency::task_continuation_context::use_arbitrary());
-	
-
-	
-//	task.wait();
-
-//	Windows::Storage::Streams::IRandomAccessStreamWithContentType^ stream = task.get();
-//	fileSize = stream->Size;
-//	m_bInited = true;
-
-//	dataReader = ref new Windows::Storage::Streams::DataReader(stream);
+	Windows::Storage::Streams::IRandomAccessStreamWithContentType^ stream = task.get();
+	fileSize = stream->Size;
 	m_bInited = true;
 
+	dataReader = ref new Windows::Storage::Streams::DataReader(stream);
+	m_bInited = true;
 
-
-
-  //  dataReader = ref new Windows::Storage::Streams::DataReader(stream);
 	
     // Initializing bitstream
     MSDK_ZERO_MEMORY(BitStream);

@@ -32,27 +32,34 @@ void ::Player::MainPage::Connect(int __connectionId, ::Platform::Object^ __targe
     {
     case 1:
         {
-            this->Splitter = safe_cast<::Windows::UI::Xaml::Controls::SplitView^>(__target);
+            ::Windows::UI::Xaml::Controls::Page^ element1 = safe_cast<::Windows::UI::Xaml::Controls::Page^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::Page^>(element1))->Loaded += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::Player::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::Page_Loaded);
         }
         break;
     case 2:
         {
-            this->Hamburger = safe_cast<::Windows::UI::Xaml::Controls::FontIcon^>(__target);
+            this->Splitter = safe_cast<::Windows::UI::Xaml::Controls::SplitView^>(__target);
         }
         break;
     case 3:
         {
-            this->Header = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            this->Hamburger = safe_cast<::Windows::UI::Xaml::Controls::FontIcon^>(__target);
         }
         break;
     case 4:
         {
-            ::Windows::UI::Xaml::Controls::AppBarButton^ element4 = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
-            (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(element4))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::Player::MainPage::*)
-                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OpenLocalFile);
+            this->Header = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
         }
         break;
     case 5:
+        {
+            ::Windows::UI::Xaml::Controls::AppBarButton^ element5 = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(element5))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::Player::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OpenLocalFile);
+        }
+        break;
+    case 6:
         {
             this->mediaElement = safe_cast<::Windows::UI::Xaml::Controls::MediaElement^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::MediaElement^>(this->mediaElement))->MediaFailed += ref new ::Windows::UI::Xaml::ExceptionRoutedEventHandler(this, (void (::Player::MainPage::*)

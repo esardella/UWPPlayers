@@ -8,6 +8,7 @@
 #include "d3d11_device.h"
 #include "base_allocator.h"
 #include "d3d11_allocator.h"
+#include "sysmem_allocator.h"
 
 
 // Disable debug string output on non-debug build

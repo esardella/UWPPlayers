@@ -38,6 +38,7 @@ CDecodingPipeline::CDecodingPipeline()
     codecID = MFX_CODEC_AVC;
     AsyncDepth = 4;
     OnPipelineStatusChanged = NULL;
+	m_DecodeInited = false;
 }
 
 bool CDecodingPipeline::Init()
@@ -46,6 +47,23 @@ bool CDecodingPipeline::Init()
 }
 
 bool CDecodingPipeline::OnStart()
+{
+	if (!m_DecodeInited)
+	{
+		std::thread t(&CDecodingPipeline::LaunchDecoderInit,this);
+		t.join();
+		return true; 
+	}
+
+}
+
+void CDecodingPipeline::LaunchDecoderInit()
+{
+	bool m_DecodeInited = InitDecoder(); 
+
+}
+
+bool CDecodingPipeline::InitDecoder()
 {
     // Loading file
     reader.Close();
@@ -67,7 +85,7 @@ bool CDecodingPipeline::OnStart()
     //--- Decoding Stream Header 
     MSDK_ZERO_MEMORY(decoderParams);
     decoderParams.mfx.CodecId = codecID;
-    decoderParams.IOPattern = MFX_IOPATTERN_OUT_VIDEO_MEMORY;
+    decoderParams.IOPattern = MFX_IOPATTERN_OUT_SYSTEM_MEMORY;
     decoderParams.AsyncDepth = AsyncDepth;
 
     reader.ReadNextFrame();
@@ -75,7 +93,7 @@ bool CDecodingPipeline::OnStart()
     if (sts != MFX_ERR_NONE)
     {
         MSDK_PRINT_RET_MSG(sts, "Error reading stream header");
-        return false;
+      //  return false;
     }
 
     //--- Setting rendering framerate
@@ -85,8 +103,6 @@ bool CDecodingPipeline::OnStart()
         //--- Some streams have corrupted framerate, set default value in this case
         frameRate = 30;
     }
-//    rendererPanel->SetFrameRate(frameRate);
-
     //--- Querying for number of surfaces required for the decoding process
     mfxFrameAllocRequest req;
     MSDK_ZERO_MEMORY(req);
@@ -97,6 +113,7 @@ bool CDecodingPipeline::OnStart()
     req.NumFrameMin = req.NumFrameSuggested = req.NumFrameSuggested + BUFFERED_FRAMES_NUM; // One more surface for rendering
     mfxFrameAllocResponse resp;
     MSDK_ZERO_MEMORY(resp);
+	
     sts = allocator.AllocFrames(&req, &resp);
     MSDK_CHECK_STATUS_BOOL(sts, "Cannot allocate frames");
     surfacesPool.Create(resp.mids, resp.NumFrameActual, 0, resp.MemType, &allocator, req.Info);
@@ -106,13 +123,7 @@ bool CDecodingPipeline::OnStart()
     MSDK_CHECK_STATUS_BOOL(sts, "Cannot initialize decoder");
 
 
-	 LoadVideoStreamDiscriptor();
-
-  //  pipelineStatus = PS_PLAYING;
- //   if (OnPipelineStatusChanged)
- //   {
-  //      OnPipelineStatusChanged(PS_PLAYING);
-  //  }
+	LoadVideoStreamDiscriptor();
     isDecodingEnding = false;
 
     return true;
@@ -120,11 +131,6 @@ bool CDecodingPipeline::OnStart()
 
 bool CDecodingPipeline::RunOnce()
 {
-    //--- Do nothing in case of pause
- //   if (pipelineStatus == PS_PAUSED)
-  //  {
- //       return true;
- //   }
 
     mfxStatus sts = MFX_ERR_NONE;
     //--- Keep AsyncDepth frames in the queue for best performance
@@ -169,6 +175,7 @@ bool CDecodingPipeline::RunOnce()
                 break;
             case MFX_ERR_MORE_SURFACE:
                 pFreeSurface = surfacesPool.GetFreeSurface();
+		
                 MSDK_CHECK_POINTER(pFreeSurface, false);
                 break;
             default:
@@ -177,6 +184,7 @@ bool CDecodingPipeline::RunOnce()
             }
         }
 
+		MSDK_IGNORE_MFX_STS(sts, MFX_WRN_VIDEO_PARAM_CHANGED); 
         MSDK_CHECK_STATUS_BOOL(sts, "DecodeFrameAsync failed");
 
         //--- Putting "decoding request" into queue (at this moment surface does not contain decoded data yet, it's just an empty container)
@@ -184,8 +192,10 @@ bool CDecodingPipeline::RunOnce()
         {
             CMfxFrameSurfaceExt* pOutSurfExt = surfacesPool.GetExtSurface(pOutSurface);
             pOutSurfExt->LinkedSyncPoint = syncPoint;
-            pOutSurfExt->UserLock = true;
+          //  pOutSurfExt->UserLock = true;
             decodingSurfaces.push_back(pOutSurfExt);
+
+	
         }
     }
     
@@ -199,18 +209,50 @@ mfxStatus CDecodingPipeline::SyncOneSurface()
         //--- Synchronizing surface to finish decoding and get actual frame data
         CMfxFrameSurfaceExt* pFrontSurface = decodingSurfaces.front();
         mfxStatus sts = session.SyncOperation(pFrontSurface->LinkedSyncPoint, WAIT_INTERVAL);
+
         MSDK_CHECK_STATUS(sts, "SyncOperation failed");
         decodingSurfaces.front()->LinkedSyncPoint = NULL;
-
-        //--- Pushing surface to the output queue
-   //     if (rendererPanel)
-   //     {
-   //         rendererPanel->EnqueueSurface(ref new SampleDecodeUWP::CMSDKHandle(pFrontSurface));
-   //     }
-
+		EnqueueSurface(pFrontSurface);
         decodingSurfaces.pop_front();
+		
     }
     return MFX_ERR_NONE;
+}
+
+void MSDKDecodeInterop::CDecodingPipeline::EnqueueSurface(CMfxFrameSurfaceExt* surface)
+{
+	
+	
+		outputSurfaces.push_back(surface);
+
+	
+}
+
+CMfxFrameSurfaceExt * CDecodingPipeline::GetNextFrame()
+{
+ 
+	CMfxFrameSurfaceExt* retVal = nullptr;
+	bool success = false;
+	bool isDone = false;
+	 
+	
+	success = RunOnce(); 
+	if (success)
+	{
+		if (outputSurfaces.size())
+		{
+			retVal = outputSurfaces.front();
+			outputSurfaces.pop_front();
+			return retVal;
+		}
+		else
+			retVal = nullptr;
+	}
+	else
+		retVal = nullptr; 
+
+	return retVal;
+
 }
 
 bool MSDKDecodeInterop::CDecodingPipeline::LoadVideoStreamDiscriptor()
@@ -313,8 +355,9 @@ mfxStatus CDecodingPipeline::InitSession()
     session.SetHandle(MFX_HANDLE_D3D11_DEVICE, hdl);
     MSDK_CHECK_STATUS(sts, "SetHandle failed");
 
-    D3D11AllocatorParams params;
-    params.pDevice = reinterpret_cast<ID3D11Device*>(hdl);
+	SysMemAllocatorParams params; 
+	params.pBufferAllocator = nullptr;
+ 
     sts = allocator.Init(&params);
     MSDK_CHECK_STATUS(sts, "Allocator Init failed");
     sts = session.SetFrameAllocator(&allocator);

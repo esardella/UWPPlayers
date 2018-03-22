@@ -3,14 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Player", "Player\Player.vcxproj", "{B26FA9B0-F892-4AD7-8394-200943E136AE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlayerCPP", "Player\Player.vcxproj", "{B26FA9B0-F892-4AD7-8394-200943E136AE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSDKDecodeInterop", "MSDKDecodeInterop\MSDKDecodeInterop.vcxproj", "{A5B43E03-8067-42B6-A2F2-87C3E65A0B90}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7581CC96-A995-449D-AFE1-B87D7399F666}"
-	ProjectSection(SolutionItems) = preProject
-		TextFile1.txt = TextFile1.txt
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayerCSharp", "PlayerCSharp\PlayerCSharp.csproj", "{439833CF-E707-4240-9B2B-486595AA3CA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +49,24 @@ Global
 		{A5B43E03-8067-42B6-A2F2-87C3E65A0B90}.Release|x64.Build.0 = Release|x64
 		{A5B43E03-8067-42B6-A2F2-87C3E65A0B90}.Release|x86.ActiveCfg = Release|Win32
 		{A5B43E03-8067-42B6-A2F2-87C3E65A0B90}.Release|x86.Build.0 = Release|Win32
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|ARM.ActiveCfg = Debug|ARM
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|ARM.Build.0 = Debug|ARM
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|ARM.Deploy.0 = Debug|ARM
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|x64.ActiveCfg = Debug|x64
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|x64.Build.0 = Debug|x64
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|x64.Deploy.0 = Debug|x64
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|x86.ActiveCfg = Debug|x86
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|x86.Build.0 = Debug|x86
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Debug|x86.Deploy.0 = Debug|x86
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|ARM.ActiveCfg = Release|ARM
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|ARM.Build.0 = Release|ARM
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|ARM.Deploy.0 = Release|ARM
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|x64.ActiveCfg = Release|x64
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|x64.Build.0 = Release|x64
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|x64.Deploy.0 = Release|x64
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|x86.ActiveCfg = Release|x86
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|x86.Build.0 = Release|x86
+		{439833CF-E707-4240-9B2B-486595AA3CA0}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

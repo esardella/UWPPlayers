@@ -16,6 +16,8 @@ namespace MSDKDecodeInterop
 	public:
 		static MSDKInterop^ CreatefromFile(Windows::Storage::StorageFile^ file);
 		MediaStreamSource^ GetMediaStreamSource(); 
+		
+
 		virtual ~MSDKInterop();
 	
 		property VideoStreamDescriptor^ VideoDescriptor
@@ -43,6 +45,7 @@ namespace MSDKDecodeInterop
 		MSDKInterop(); 
 		void OnStarting(MediaStreamSource ^sender, MediaStreamSourceStartingEventArgs ^args);
 		void OnSampleRequested(MediaStreamSource ^sender, MediaStreamSourceSampleRequestedEventArgs ^args);
+		MediaStreamSample ^ GetNextSample();
 
 		CDecodingPipeline pipeline;
 		MediaStreamSource ^ mss;
@@ -51,6 +54,8 @@ namespace MSDKDecodeInterop
 		VideoStreamDescriptor ^ videoStreamDescriptor;
 		TimeSpan mediaDuration;
 		String^ videoCodecName;
+		
+		std::recursive_mutex mutexGuard;
  
 	};
 

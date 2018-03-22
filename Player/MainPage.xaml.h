@@ -25,9 +25,12 @@ namespace Player
 		void DisplayErrorMessage(Platform::String ^ message);
 
 	private:
+		void Page_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 		void  OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 		task<void> LoadSource();
 
 		MSDKDecodeInterop::MSDKInterop^ msdkMSS;
+		Windows::UI::Xaml::DispatcherTimer^ timer = ref new Windows::UI::Xaml::DispatcherTimer();
+		void OnTick(Platform::Object ^sender, Platform::Object ^args);
 	};
 }
