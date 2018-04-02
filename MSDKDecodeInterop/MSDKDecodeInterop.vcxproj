@@ -185,12 +185,13 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj /await %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>C:\Users\NUC6-USER\Documents\Visual Studio 2017\Projects\MSDK\mdp_msdk-api\opensource\mfx_dispatch\include;C:\Users\NUC6-USER\Documents\Visual Studio 2017\Projects\MSDK\mdp_msdk-api\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\NUC6-USER\source\repos\Player\ffmpeg\Build\Windows10\x86\include;C:\Users\NUC6-USER\source\repos\Player\ffmpeg;C:\Users\NUC6-USER\Documents\Visual Studio 2017\Projects\MSDK\mdp_msdk-api\opensource\mfx_dispatch\include;C:\Users\NUC6-USER\Documents\Visual Studio 2017\Projects\MSDK\mdp_msdk-api\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>libmfx_vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libmfx_vs2015.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;shcore.lib;runtimeobject.lib;mfuuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\ffmpeg\Build\Windows10\$(PlatformTarget)\bin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -213,6 +214,7 @@
     <ClInclude Include="d3d11_allocator.h" />
     <ClInclude Include="d3d11_device.h" />
     <ClInclude Include="DecodingPipeline.h" />
+    <ClInclude Include="ffmpegReader.h" />
     <ClInclude Include="hw_device.h" />
     <ClInclude Include="MfxFrameSurfaceExt.h" />
     <ClInclude Include="mfx_itt_trace.h" />
@@ -234,6 +236,7 @@
     <ClCompile Include="d3d11_allocator.cpp" />
     <ClCompile Include="d3d11_device.cpp" />
     <ClCompile Include="DecodingPipeline.cpp" />
+    <ClCompile Include="ffmpegReader.cpp" />
     <ClCompile Include="MSDKDecodeInterop.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

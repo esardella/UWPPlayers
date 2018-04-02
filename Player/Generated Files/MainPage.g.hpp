@@ -61,6 +61,13 @@ void ::Player::MainPage::Connect(int __connectionId, ::Platform::Object^ __targe
         break;
     case 6:
         {
+            ::Windows::UI::Xaml::Controls::TextBox^ element6 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(element6))->KeyUp += ref new ::Windows::UI::Xaml::Input::KeyEventHandler(this, (void (::Player::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::Input::KeyRoutedEventArgs^))&MainPage::URIBoxKeyUp);
+        }
+        break;
+    case 7:
+        {
             this->mediaElement = safe_cast<::Windows::UI::Xaml::Controls::MediaElement^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::MediaElement^>(this->mediaElement))->MediaFailed += ref new ::Windows::UI::Xaml::ExceptionRoutedEventHandler(this, (void (::Player::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::ExceptionRoutedEventArgs^))&MainPage::MediaFailed);

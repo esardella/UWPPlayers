@@ -24,51 +24,99 @@ or https://software.intel.com/en-us/media-client-solutions-support.
 #include "PluginsManager.h"
 
 using namespace MSDKDecodeInterop;
-using namespace Windows::Media::Core; 
+using namespace Windows::Media::Core;
 using namespace Windows::Media::MediaProperties;
 
 #define WAIT_INTERVAL 20000
 #define BUFFERED_FRAMES_NUM 5
 
 CDecodingPipeline::CDecodingPipeline()
-    : pluginsManager(session)
+	: pluginsManager(session)
 {
-    IsHWLib = true;
-    pipelineStatus = PS_NONE;
-    codecID = MFX_CODEC_AVC;
-    AsyncDepth = 4;
-    OnPipelineStatusChanged = NULL;
+	IsHWLib = true;
+	codecID = MFX_CODEC_AVC;
+	AsyncDepth = 4;
 	m_DecodeInited = false;
+	isStreaming = false; 
 }
 
 bool CDecodingPipeline::Init()
 {
-    return InitSession() >= MFX_ERR_NONE;
+	return InitSession() >= MFX_ERR_NONE;
 }
 
 bool CDecodingPipeline::OnStart()
 {
 	if (!m_DecodeInited)
 	{
-		std::thread t(&CDecodingPipeline::LaunchDecoderInit,this);
+		std::thread t(&CDecodingPipeline::LaunchDecoderInit, this);
 		t.join();
-		return true; 
+		return true;
 	}
-
+	return false;
 }
 
 void CDecodingPipeline::LaunchDecoderInit()
 {
-	bool m_DecodeInited = InitDecoder(); 
+	bool m_DecodeInited = InitDecoder();
 
 }
 
+bool CDecodingPipeline::SetFileSource(Windows::Storage::StorageFile^ fs)
+{
+	fileSource = fs;
+
+	if (fileSource->FileType == ".mp4" || fileSource->FileType == "*.MP4")
+	{
+		reader.reset(new ffmpegReader());
+		//set codec after extracting the bitstream from the containter
+	}
+ 
+	if (fileSource->FileType == ".264" || fileSource->FileType == ".h264")
+	{
+		reader.reset(new CSimpleBitstreamReader());
+		SetCodecID(MFX_CODEC_AVC);
+	}
+	else if (fileSource->FileType == ".m2v" || fileSource->FileType == ".mpg" || fileSource->FileType == ".bs" || fileSource->FileType == ".es")
+	{
+		reader.reset(new CSimpleBitstreamReader());
+		SetCodecID(MFX_CODEC_MPEG2);
+	}
+	else if (fileSource->FileType == ".265" || fileSource->FileType == ".h265" || fileSource->FileType == ".hevc")
+	{
+		reader.reset(new CSimpleBitstreamReader());
+		SetCodecID(MFX_CODEC_HEVC);
+	}
+
+	return reader.get() != nullptr; 
+
+}
+bool MSDKDecodeInterop::CDecodingPipeline::SetURISource(Platform::String ^ uri)
+{
+	HRESULT hr = S_OK;
+	const char* charStr = nullptr;
+	if (!uri)
+	{
+	    return  E_INVALIDARG;
+	}
+	reader.reset(new ffmpegReader());
+	this->uri = uri; 
+	isStreaming = true; 
+	return reader.get() != nullptr;
+
+}
 bool CDecodingPipeline::InitDecoder()
 {
-    // Loading file
-    reader.Close();
-    reader.Init(fileSource);
-
+	reader->Close();
+	if (isStreaming)
+	{
+		reader->InitURI(uri);
+	}
+	else
+	{
+		reader->Init(fileSource);
+	}
+ 
     // Creating decoder
     if (!pDecoder)
     {
@@ -88,8 +136,8 @@ bool CDecodingPipeline::InitDecoder()
     decoderParams.IOPattern = MFX_IOPATTERN_OUT_SYSTEM_MEMORY;
     decoderParams.AsyncDepth = AsyncDepth;
 
-    reader.ReadNextFrame();
-    sts = LoadPluginsAndDecodeHeader(&reader.BitStream, codecID);
+    reader->ReadNextFrame();
+    sts = LoadPluginsAndDecodeHeader(&reader->BitStream, codecID);
     if (sts != MFX_ERR_NONE)
     {
         MSDK_PRINT_RET_MSG(sts, "Error reading stream header");
@@ -146,23 +194,23 @@ bool CDecodingPipeline::RunOnce()
         bool shouldRepeat = true;
         while (shouldRepeat)
         {
-            sts = pDecoder->DecodeFrameAsync(isDecodingEnding ? NULL : &reader.BitStream,
+            sts = pDecoder->DecodeFrameAsync(isDecodingEnding ? NULL : &reader->BitStream,
                 pFreeSurface, &pOutSurface, &syncPoint);
 
             switch(sts)
             { 
             case MFX_ERR_MORE_DATA:
-                if (reader.BitStream.DataLength > (mfxU32)(reader.BitStream.MaxLength*0.9))
+                if (reader->BitStream.DataLength > (mfxU32)(reader->BitStream.MaxLength*0.9))
                 {
                     //--- If bitstream is full of data, but we still have an error - expand buffer
-                    reader.ExpandBitstream(reader.BitStream.MaxLength);
+                    reader->ExpandBitstream(reader->BitStream.MaxLength);
                 }
                 if (isDecodingEnding)
                 {
                     //--- Buffered frames are taken, time to close thread
                     return false;
                 }
-                else if (reader.ReadNextFrame() == MFX_ERR_MORE_DATA)
+                else if (reader->ReadNextFrame() == MFX_ERR_MORE_DATA)
                 {
                     //--- If we can't read more data from file - finish decoding, clean up buffers.
                     isDecodingEnding = true;
@@ -293,14 +341,14 @@ void CDecodingPipeline::OnClose()
     surfacesPool.Clear();
     pDecoder->Close();
     decodingSurfaces.clear();
-    reader.Close();
+    reader->Close();
     pluginsManager.UnloadAllPlugins();
 
-    pipelineStatus = PS_STOPPED;
-    if (OnPipelineStatusChanged)
-    {
-        OnPipelineStatusChanged(PS_STOPPED);
-    }
+   // pipelineStatus = PS_STOPPED;
+ //   if (OnPipelineStatusChanged)
+//    {
+  //      OnPipelineStatusChanged(PS_STOPPED);
+ //   }
 }
 
 mfxStatus CDecodingPipeline::InitSession()
@@ -371,49 +419,7 @@ VideoStreamDescriptor ^ MSDKDecodeInterop::CDecodingPipeline::GetVideoStreamDisc
 	return videoStreamDiscriptor; 
 }
 
-void CDecodingPipeline::Play()
-{
-	/*
-   // rendererPanel->SetPlay(true);
-    if (!IsRunning())
-    {
-        //--- Currently pipeline is stopped, let's start playing
-        Start();
-    }
-    else
-    {
-        //--- Currently pipeline is playing, but possibly paused. Let's resume playing
-        pipelineStatus = PS_PLAYING;
-        if (OnPipelineStatusChanged)
-        {
-            OnPipelineStatusChanged(PS_PLAYING);
-        }
-    }
-	*/
-}
 
-void CDecodingPipeline::Stop()
-{
-    //CThread11::Stop();
-}
-
-void CDecodingPipeline::Pause()
-{
-	/*
-    pipelineStatus = PS_PAUSED;
-   // rendererPanel->SetPlay(false);
-    if (OnPipelineStatusChanged)
-    {
-        OnPipelineStatusChanged(PS_PAUSED);
-    }
-	*/
-}
-
-void CDecodingPipeline::Load(Windows::Storage::StorageFile^ file)
-{
-   // Stop();
-   // fileSource = file;
-}
 
 mfxStatus CDecodingPipeline::LoadPluginsAndDecodeHeader(mfxBitstream* pBS, mfxU32 codecID)
 {

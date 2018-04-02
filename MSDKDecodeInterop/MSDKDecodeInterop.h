@@ -15,6 +15,7 @@ namespace MSDKDecodeInterop
 
 	public:
 		static MSDKInterop^ CreatefromFile(Windows::Storage::StorageFile^ file);
+		static MSDKInterop^ CreatefromURI(String^ uri);
 		MediaStreamSource^ GetMediaStreamSource(); 
 		
 

@@ -135,10 +135,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MSDKDecodeInterop\MSDKDecodeInterop.vcxproj">
-      <Project>{a5b43e03-8067-42b6-a2f2-87c3e65a0b90}</Project>
-      <Name>MSDKDecodeInterop</Name>
-    </ProjectReference>
+    <Reference Include="MSDKDecodeInterop, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\x64\Debug\MSDKDecodeInterop\MSDKDecodeInterop.winmd</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

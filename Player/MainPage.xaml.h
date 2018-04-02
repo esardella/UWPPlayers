@@ -27,6 +27,7 @@ namespace Player
 	private:
 		void Page_Loaded(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 		void  OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
+		void URIBoxKeyUp(Platform::Object^ sender, Windows::UI::Xaml::Input::KeyRoutedEventArgs^ e);
 		task<void> LoadSource();
 
 		MSDKDecodeInterop::MSDKInterop^ msdkMSS;

@@ -123,6 +123,11 @@ mfxStatus CSimpleBitstreamReader::Init(Windows::Storage::StorageFile^ fileSource
     return MFX_ERR_NONE;
 }
 
+mfxStatus CSimpleBitstreamReader::InitURI(Platform::String ^ uri)
+{
+	return MFX_ERR_NONE; 
+}
+
 mfxStatus CSimpleBitstreamReader::ReadNextFrame()
 {
     if (!m_bInited)

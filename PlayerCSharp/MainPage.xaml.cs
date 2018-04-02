@@ -67,7 +67,7 @@ namespace PlayerCSharp
                         }
                         else
                         {
-                            // DisplayErrorMessage("Cannot Open Media");
+                            System.Diagnostics.Debug.WriteLine("Could not get stream source");
                         }
                     }
                     else
@@ -78,7 +78,8 @@ namespace PlayerCSharp
                 }
                 catch (Exception ex)
                 {
-                    // DisplayErrorMessage(ex->Message);
+                    System.Diagnostics.Debug.WriteLine("exception caught" + e.ToString()); 
+                  
                 }
             }
             else
@@ -90,7 +91,7 @@ namespace PlayerCSharp
 
         private void MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-
+            System.Diagnostics.Debug.WriteLine("In MediaFailed ");
         }
 
     }    

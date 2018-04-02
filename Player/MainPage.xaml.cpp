@@ -64,6 +64,7 @@ void Player::MainPage::OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml
 	picker->FileTypeFilter->Append(".h265");
 	picker->FileTypeFilter->Append(".265");
 	picker->FileTypeFilter->Append(".hevc");
+	picker->FileTypeFilter->Append(".mp4");
 
 	create_task(picker->PickSingleFileAsync()).then([this](Windows::Storage::StorageFile^ file)
 	{
@@ -108,6 +109,49 @@ void Player::MainPage::OpenLocalFile(Platform::Object^ sender, Windows::UI::Xaml
 
 
 		
+
+}
+
+void Player::MainPage::URIBoxKeyUp(Platform::Object ^ sender, Windows::UI::Xaml::Input::KeyRoutedEventArgs ^ e)
+{
+ 
+	String^ uri = safe_cast<TextBox^>(sender)->Text;
+	if (e->Key == Windows::System::VirtualKey::Enter && !uri->IsEmpty())
+	{
+		// Mark event as handled to prevent duplicate event to re-triggered
+		e->Handled = true;
+
+		try {
+
+			msdkMSS = MSDKDecodeInterop::MSDKInterop::CreatefromURI(uri);
+			if (msdkMSS != nullptr)
+			{
+				MediaStreamSource^ mss = msdkMSS->GetMediaStreamSource();
+				if (mss)
+				{
+					mediaElement->SetMediaStreamSource(mss);
+					Splitter->IsPaneOpen = false;
+				}
+				else
+				{
+					DisplayErrorMessage("Cannot Open Media");
+				}
+			}
+			else
+			{
+				DisplayErrorMessage("Cannot open media");
+
+			}
+		}
+		catch (COMException^ ex)
+		{
+			DisplayErrorMessage(ex->Message);
+		}
+	}
+
+
+
+
 
 }
 

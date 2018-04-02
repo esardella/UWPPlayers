@@ -21,14 +21,13 @@ or https://software.intel.com/en-us/media-client-solutions-support.
 #include "mfxvideo++.h"
 #include "Thread11.h"
 #include "SimpleBitstreamReader.h"
+#include "ffmpegReader.h"
 #include <atomic>
 #include <list>
 #include "d3d11_device.h"
-//#include "d3d11_allocator.h"
 #include "sysmem_allocator.h"
 #include "SurfacesPool.h"
 #include "Thread11.h"
-
 #include "sample_defs.h"
 
 #include "PluginsManager.h"
@@ -38,20 +37,9 @@ using namespace Windows::Media::Core;
 namespace MSDKDecodeInterop
 {
 	
-
-	class CDecodingPipeline  //: public CThread11
+	class CDecodingPipeline  
 	{
 	public:
-
-		enum PIPELINE_STATUS
-		{
-			PS_NONE, // No clip or error occured
-			PS_STOPPED,
-			PS_PAUSED,
-			PS_PLAYING,
-		};
-
-		std::function<void(PIPELINE_STATUS)> OnPipelineStatusChanged;
 
 		CDecodingPipeline();
 
@@ -66,15 +54,11 @@ namespace MSDKDecodeInterop
 		VideoStreamDescriptor^ videoStreamDiscriptor;
 		VideoStreamDescriptor^ GetVideoStreamDiscriptor(); 
 
-		void Play();
-		void Stop();
-		void Pause();
-
-		void Load(Windows::Storage::StorageFile^ file);
 		void SetCodecID(mfxU32 codec) { codecID = codec; }
-		void SetFileSource(Windows::Storage::StorageFile^ fs) { fileSource = fs; }
+		bool SetFileSource(Windows::Storage::StorageFile^ fs);
+		bool SetURISource(Platform::String^ uri);
 		
-		PIPELINE_STATUS GetStatus() { return pipelineStatus; }
+
 		bool IsHWLib;
 		mfxU32 AsyncDepth;
 		mfxHDL GetHWDevHdl()
@@ -82,15 +66,12 @@ namespace MSDKDecodeInterop
 			mfxHDL hdl = NULL;
 			return dev.GetHandle(MFX_HANDLE_D3D11_DEVICE, &hdl) >= MFX_ERR_NONE ? hdl : NULL;
 		}
-		//  void SetRendererPanel(SampleDecodeUWP::CRendererPanel^ panel) { rendererPanel = panel; }
-		int GetProgressPromilleage() { return  reader.GetFileSize() ? (int)(reader.GetBytesProcessed() * 1000 / reader.GetFileSize()) : 0; }
+	
+		int GetProgressPromilleage() { return  reader->GetFileSize() ? (int)(reader->GetBytesProcessed() * 1000 / reader->GetFileSize()) : 0; }
 		std::list<CMfxFrameSurfaceExt*> outputSurfaces;
 	protected:
-	  //virtual bool OnStart() override;
-		//bool OnStart(); 
-	//	virtual bool RunOnce() override;
+
 		bool RunOnce();
-	//	virtual void OnClose() override;
 		void OnClose();
 
 	private:
@@ -101,34 +82,26 @@ namespace MSDKDecodeInterop
 	
 
 		bool LoadVideoStreamDiscriptor();
-		
-
 		MFXVideoSession session;
 		mfxIMPL impl;
 
-		CSimpleBitstreamReader reader;
-		std::atomic<PIPELINE_STATUS> pipelineStatus;
-
+		std::auto_ptr<CSimpleBitstreamReader> reader; 
+		 
 		mfxVideoParam decoderParams;
 		MFXVideoDECODE* pDecoder = NULL;
 		mfxU32 codecID;
 
 		CD3D11Device dev;
-		//D3D11FrameAllocator allocator;
+
 		SysMemFrameAllocator allocator; 
 		CSurfacesPool surfacesPool;
 		std::list<CMfxFrameSurfaceExt*> decodingSurfaces;
 
-		
-
-		//SampleDecodeUWP::CRendererPanel^ rendererPanel = nullptr;
-
 		Windows::Storage::StorageFile^ fileSource;
-
+		Platform::String^ uri;
+		bool isStreaming; 
 		bool isDecodingEnding;
-
 		CPluginsManager pluginsManager;
-
 		mfxStatus CDecodingPipeline::LoadPluginsAndDecodeHeader(mfxBitstream* pBS, mfxU32 codecID);
 	};
 

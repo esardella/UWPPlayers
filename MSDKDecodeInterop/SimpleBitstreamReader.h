@@ -25,32 +25,35 @@ or https://software.intel.com/en-us/media-client-solutions-support.
 
 using namespace concurrency;
 
+class CSimpleBitstreamReader
+{
+public: 
+	CSimpleBitstreamReader();
+	virtual ~CSimpleBitstreamReader();
 
-	class CSimpleBitstreamReader
-	{
-	public:
-		CSimpleBitstreamReader();
-		virtual ~CSimpleBitstreamReader();
+	//resets position to file begin
+	virtual void      Reset();
+	virtual void      Close();
+	virtual mfxStatus Init(Windows::Storage::StorageFile^ fileSource);
+	virtual mfxStatus InitURI(Platform::String^ uri);
+	virtual mfxStatus ReadNextFrame();
 
-		//resets position to file begin
-		virtual void      Reset();
-		virtual void      Close();
-		virtual mfxStatus Init(Windows::Storage::StorageFile^ fileSource);
-		virtual mfxStatus ReadNextFrame();
-		mfxBitstream BitStream;
-		mfxStatus ExpandBitstream(unsigned int extraSize);
-		mfxU64 GetFileSize() { return fileSize; }
-		mfxU64 GetBytesProcessed() { return bytesCompleted + BitStream.DataOffset; }
+	mfxStatus ExpandBitstream(unsigned int extraSize);
+	mfxU64 GetFileSize() { return fileSize; }
+	mfxU64 GetBytesProcessed() { return bytesCompleted + BitStream.DataOffset; }
+	mfxBitstream BitStream;
 
-	protected:
-		Windows::Storage::Streams::IRandomAccessStreamWithContentType^ stream;
-		Windows::Storage::Streams::DataReader^ dataReader;
-		std::atomic<bool>      m_bInited;
-		std::atomic<mfxU64> fileSize;
-		std::atomic<mfxU64> bytesCompleted;
-		Windows::Storage::StorageFile^ fs;
+protected: 
+	Windows::Storage::Streams::IRandomAccessStreamWithContentType^ stream;
+	Windows::Storage::Streams::DataReader^ dataReader;
+	Windows::Storage::StorageFile^ fs;
 	
-	private: 
-	//	task<void> LoadSource(Windows::Storage::StorageFile^ fileSource);
-	};
+
+	std::atomic<bool>   m_bInited;
+	std::atomic<mfxU64> fileSize;
+	std::atomic<mfxU64> bytesCompleted;
+};
+
+
+
 

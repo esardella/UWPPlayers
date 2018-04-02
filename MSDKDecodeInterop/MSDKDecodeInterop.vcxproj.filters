@@ -18,6 +18,7 @@
     <ClCompile Include="SurfacesPool.cpp" />
     <ClCompile Include="Thread11.cpp" />
     <ClCompile Include="sysmem_allocator.cpp" />
+    <ClCompile Include="ffmpegReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -39,5 +40,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Thread11.h" />
     <ClInclude Include="sysmem_allocator.h" />
+    <ClInclude Include="ffmpegReader.h" />
   </ItemGroup>
 </Project>
